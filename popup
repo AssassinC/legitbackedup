@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# z3bra - (c) wtfpl 2014
+# Create a small popup with the given text
+#
+# depends: lemonbar, wattr and common sense
+
+# bar options
+#font='-*-tewi-medium-*-*-*-*-*-*-*-*-*-*-*'
+bg="#DD000000"
+fg="#CCC"
+hl="#443232"
+strlen=30
+
+default_geometry() {
+    # get screen size
+    x=$(wattr w `lsw -r`)
+    y=$(wattr h `lsw -r`)
+
+    width=200
+    height=30
+
+    offy=40
+    offx=$(( x - width - 40))
+
+    echo "${width}x${height}+${offx}+${offy}"
+}
+
+while getopts "c:d:g:h" opt; do
+    case $opt in
+        d) SLEEP=$OPTARG   ;;
+        g) GEOM=$OPTARG    ;;
+        h) usage; exit 0   ;;
+        c) COMMAND=$OPTARG ;;
+    esac
+done
+
+GEOM=${GEOM:-$(default_geometry)}
+SLEEP=${SLEEP:-5}
+
+if [ -t 0 ]; then
+    CONTENT=$@
+else
+    CONTENT=$(cat)
+fi
+
+str="$CONTENT"
+
+if [ ! -z "$COMMAND" ]; then
+    str="%{A:$COMMAND:}$str%{A}"
+fi
+
+(echo "%{c}" $str; sleep $SLEEP) | lemonbar -d -g $GEOM -B $bg -F $fg -f $font | sh &
