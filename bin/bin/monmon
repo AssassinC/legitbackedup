@@ -1,0 +1,14 @@
+#!/bin/bash
+
+SCREEN_LEFT=eDP1
+SCREEN_RIGHT=HDMI1
+
+if [ "$1" == "dual" ]; then
+	echo 'Dual monitor setup'
+	xrandr --output $SCREEN_RIGHT --mode 1920x1080 --right-of $SCREEN_LEFT
+elif [ "$1" == "single" ]; then
+	echo 'Single monitor setup'
+	xrandr --auto
+else
+	echo "$0: [dual single]"
+fi
